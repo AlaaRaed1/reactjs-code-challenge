@@ -1,4 +1,5 @@
 import { useRef, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   faCheck,
   faTimes,
@@ -15,7 +16,9 @@ const SIGNUP_URL = "/users/";
 const SignUp = () => {
   const nameRef = useRef();
   const errRef = useRef();
+  const navigate = useNavigate();
   const [listOfUsers, setListOfUsers] = useState([]);
+
   const [name, setName] = useState("");
   const [validName, setValidName] = useState(false);
   const [nameFocus, setNameFocus] = useState(false);
@@ -96,10 +99,13 @@ const SignUp = () => {
             headers: { "Content-Type": "application/json" },
           }
         );
+        setErrMsg("");
         setSuccess(true);
+        if (response) {
+          navigate("/home");
+        }
+        console.log(response);
       }
-
-      setSuccess(true);
     } catch (err) {
       if (!err?.response) {
         setErrMsg("No Server Response");
@@ -159,6 +165,7 @@ const SignUp = () => {
         </p>
         <label htmlFor="email">
           Email:
+          {/* Checking email if its valid to display the right icon is not working properly any suggestions? */}
           <FontAwesomeIcon
             icon={faCheck}
             className={validEmail ? "valid" : "hide"}
@@ -178,9 +185,14 @@ const SignUp = () => {
           required
           aria-invalid={validEmail ? "false" : "true"}
           aria-describedby="uidnote"
-          onFocus={() => setNameFocus(true)}
-          onBlur={() => setNameFocus(false)}
+          onFocus={() => setEmailFocus(true)}
+          onBlur={() => setEmailFocus(false)}
         />
+        <p className={emailFocus && !validEmail ? "instructions" : "offscreen"}>
+          <FontAwesomeIcon icon={faInfoCircle} />
+          Example: example@gmail.com
+          <br />
+        </p>
         <label htmlFor="password">
           Password:
           <FontAwesomeIcon
