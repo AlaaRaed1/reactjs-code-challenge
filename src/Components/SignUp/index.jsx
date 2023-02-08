@@ -8,18 +8,23 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
 import axios from "../../Api/axios";
 const USER_REGEX = /^[A-z][A-z0-9-_]{3,23}$/;
-const PASSOWRD_REGEX =
-  /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
+const EMAIL_REGEX = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,24}$/;
+const SPECIALS = /[*|":!<>[\]{}`\\()';@&$#%^]/;
 const SIGNUP_URL = "/users/";
 const SignUp = () => {
   const nameRef = useRef();
   const errRef = useRef();
-
+  const [listOfUsers, setListOfUsers] = useState([]);
   const [name, setName] = useState("");
   const [validName, setValidName] = useState(false);
   const [nameFocus, setNameFocus] = useState(false);
 
-  const [password, setpassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [validEmail, setValidEmail] = useState(false);
+  const [emailFocus, setEmailFocus] = useState(false);
+
+  const [password, setPassword] = useState("");
   const [validPassword, setValidPassword] = useState(false);
   const [passwordFocus, setPasswordFocus] = useState(false);
 
@@ -29,17 +34,31 @@ const SignUp = () => {
 
   const [errMsg, setErrMsg] = useState("");
   const [success, setSuccess] = useState(false);
-  console.log(name, password);
+
+  const getListOfUsers = async () => {
+    const response = await axios.get("users");
+    setListOfUsers(response.data);
+  };
   useEffect(() => {
     nameRef.current.focus();
-  }, []);
-  // alaaRAED1!
-  useEffect(() => {
-    setValidName(USER_REGEX.test(name));
-  }, [name]);
+    getListOfUsers();
+    if (success) {
+      alert("you are logged in successfully");
+    }
+  }, [success]);
 
   useEffect(() => {
-    setValidPassword(PASSOWRD_REGEX.test(password));
+    setValidName(USER_REGEX.test(name));
+    setValidEmail(EMAIL_REGEX.test(email));
+  }, [name, email]);
+
+  useEffect(() => {
+    if (!SPECIALS.test(password) && PASSWORD_REGEX.test(password)) {
+      setValidPassword(true);
+    } else {
+      setValidPassword(false);
+    }
+
     setValidMatch(password === matchPassword);
   }, [password, matchPassword]);
 
@@ -52,27 +71,43 @@ const SignUp = () => {
     console.log(name, password);
     // if button enabled with JS hack
     const v1 = USER_REGEX.test(name);
-    const v2 = PASSOWRD_REGEX.test(password);
+    const v2 = PASSWORD_REGEX.test(password);
     if (!v1 || !v2) {
       setErrMsg("Invalid Entry");
       return;
     }
     try {
-      const response = await axios.post(
-        SIGNUP_URL,
-        JSON.stringify({
-          name,
-          email: "alaaraed@gmail.com",
-          password,
-          avatar: "https://api.lorem.space/image/face?w=640&h=480&r=867",
-        }),
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-      console.log(JSON.stringify(response));
+      const userTaken = listOfUsers.map((user) => user.name).includes(name);
+      const emailTaken = listOfUsers.map((user) => user.email).includes(email);
+      if (userTaken) {
+        setErrMsg("User is Taken");
+      } else if (emailTaken) {
+        setErrMsg("Email is Taken");
+      } else {
+        const response = await axios.post(
+          SIGNUP_URL,
+          JSON.stringify({
+            name,
+            email,
+            password,
+            avatar: "https://api.lorem.space/image/face?w=640&h=480&r=867",
+          }),
+          {
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+        setSuccess(true);
+      }
+
       setSuccess(true);
-    } catch (err) {}
+    } catch (err) {
+      if (!err?.response) {
+        setErrMsg("No Server Response");
+      } else {
+        setErrMsg("Sign Up Failed");
+      }
+      errRef.current.focus();
+    }
   };
   return (
     <section>
@@ -122,7 +157,30 @@ const SignUp = () => {
           <br />
           Letters, numbers, underscores, hyphens allowed.
         </p>
-
+        <label htmlFor="email">
+          Email:
+          <FontAwesomeIcon
+            icon={faCheck}
+            className={validEmail ? "valid" : "hide"}
+          />
+          <FontAwesomeIcon
+            icon={faTimes}
+            className={validEmail || email ? "hide" : "invalid"}
+          />
+        </label>
+        <input
+          type="email"
+          id="email"
+          ref={nameRef}
+          autoComplete="off"
+          onChange={(e) => setEmail(e.target.value)}
+          value={email}
+          required
+          aria-invalid={validEmail ? "false" : "true"}
+          aria-describedby="uidnote"
+          onFocus={() => setNameFocus(true)}
+          onBlur={() => setNameFocus(false)}
+        />
         <label htmlFor="password">
           Password:
           <FontAwesomeIcon
@@ -137,7 +195,7 @@ const SignUp = () => {
         <input
           type="password"
           id="password"
-          onChange={(e) => setpassword(e.target.value)}
+          onChange={(e) => setPassword(e.target.value)}
           value={password}
           required
           aria-invalid={validPassword ? "false" : "true"}
@@ -154,15 +212,9 @@ const SignUp = () => {
           <FontAwesomeIcon icon={faInfoCircle} />
           8 to 24 characters.
           <br />
-          Must include uppercase and lowercase letters, a number and a special
-          character.
+          Must include uppercase and lowercase letters, a number and not include
+          special characters.
           <br />
-          Allowed special characters:{" "}
-          <span aria-label="exclamation mark">!</span>{" "}
-          <span aria-label="at symbol">@</span>{" "}
-          <span aria-label="hashtag">#</span>{" "}
-          <span aria-label="dollar sign">$</span>{" "}
-          <span aria-label="percent">%</span>
         </p>
 
         <label htmlFor="confirm_password">

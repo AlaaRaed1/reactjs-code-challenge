@@ -1,61 +1,63 @@
 import React, { useRef, useState, useEffect, useContext } from "react";
 import AuthContext from "../../Context/AuthProvider";
+import { useNavigate } from "react-router-dom";
 import axios from "../../Api/axios";
 import { Link } from "react-router-dom";
-const LOGIN_URL = "/users/is-available";
+const LOGIN_URL = "/auth/login";
 const SignIn = () => {
-  const [setAuth] = useContext(AuthContext);
-  const userRef = useRef();
+  const [auth, setAuth] = useContext(AuthContext);
+  const navigate = useNavigate();
+  const emailRef = useRef();
   const errRef = useRef();
-
-  const [user, setUser] = useState("");
+  console.log(auth);
+  const [email, setEmail] = useState("");
   const [listOfUsers, setListOfUsers] = useState([]);
-  const [pwd, setPwd] = useState("");
+  const [password, setPassword] = useState("");
   const [errMsg, setErrMsg] = useState("");
-  const [success, setSuccess] = useState();
 
   const getUsers = async () => {
     const data = await axios.get("/users");
     setListOfUsers(data.data);
   };
+
   useEffect(() => {
     getUsers();
   }, []);
-  console.log(listOfUsers);
+
   useEffect(() => {
-    userRef.current.focus();
+    emailRef.current.focus();
   }, []);
+
+  console.log(listOfUsers);
 
   useEffect(() => {
     setErrMsg("");
-  }, [user, pwd]);
+  }, [email, password]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const userTaken = listOfUsers.includes(
-        (item) => item.name === "alaaRaed"
+      const response = await axios.post(
+        LOGIN_URL,
+        JSON.stringify({ email, password }),
+        {
+          headers: { "Content-Type": "application/json" },
+        }
       );
-      console.log(userTaken);
-      if (userTaken) {
-        alert("User taken");
-      } else {
-        const response = await axios.post(
-          LOGIN_URL,
-          JSON.stringify({ email: "nico@gmail.com" }),
-          {
-            headers: { "Content-Type": "application/json" },
-          }
-        );
+      if (response) {
+        navigate("/home");
       }
-
-      const data = await axios.get("/users");
-
-      setUser("");
-      setPwd("");
-      setSuccess(true);
-    } catch (err) {}
+      console.log(JSON.stringify(response));
+      const access_token = response.data.access_token;
+      setAuth({ email, password, access_token });
+      setEmail("");
+      setPassword("");
+    } catch (err) {
+      errRef.current.focus();
+    }
   };
+
   return (
     <section>
       <p
@@ -67,16 +69,16 @@ const SignIn = () => {
       </p>
       <h1>Sign In</h1>
       <form onSubmit={handleSubmit}>
-        <label htmlFor="username">Username:</label>
+        <label htmlFor="email">Email:</label>
         <input
-          type="text"
-          id="username"
-          ref={userRef}
+          type="email"
+          id="email"
+          ref={emailRef}
           autoComplete="off"
           onChange={(e) => {
-            setUser(e.target.value);
+            setEmail(e.target.value);
           }}
-          value={user}
+          value={email}
           required
         />
         <label htmlFor="password">Password:</label>
@@ -84,9 +86,9 @@ const SignIn = () => {
           type="password"
           id="password"
           onChange={(e) => {
-            setPwd(e.target.value);
+            setPassword(e.target.value);
           }}
-          value={pwd}
+          value={password}
           required
         />
         <button>Sign In </button>
