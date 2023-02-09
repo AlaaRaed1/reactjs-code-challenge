@@ -8,15 +8,32 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
 import axios from "../../Api/axios";
+import {
+  Stack,
+  TextField,
+  Paper,
+  Button,
+  Typography,
+  Alert,
+  FormHelperText,
+} from "@mui/material";
+
 const USER_REGEX = /^[A-z][A-z0-9-_]{3,23}$/;
+
 const EMAIL_REGEX = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+
 const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,24}$/;
+
 const SPECIALS = /[*|":!<>[\]{}`\\()';@&$#%^]/;
+
 const SIGNUP_URL = "/users/";
+
 const SignUp = () => {
   const nameRef = useRef();
   const errRef = useRef();
+
   const navigate = useNavigate();
+
   const [listOfUsers, setListOfUsers] = useState([]);
 
   const [name, setName] = useState("");
@@ -49,7 +66,7 @@ const SignUp = () => {
       alert("you are logged in successfully");
     }
   }, [success]);
-
+  console.log(listOfUsers);
   useEffect(() => {
     setValidName(USER_REGEX.test(name));
     setValidEmail(EMAIL_REGEX.test(email));
@@ -116,163 +133,105 @@ const SignUp = () => {
     }
   };
   return (
-    <section>
-      <p
-        ref={errRef}
-        className={errMsg ? "errmsg" : "offscreen"}
-        aria-live="assertive"
-      >
-        {errMsg}
-      </p>
-      <h1>Sign Up</h1>
-      <form onSubmit={handleSubmit}>
-        <label htmlFor="username">
-          Username:
-          <FontAwesomeIcon
-            icon={faCheck}
-            className={validName ? "valid" : "hide"}
-          />
-          <FontAwesomeIcon
-            icon={faTimes}
-            className={validName || !name ? "hide" : "invalid"}
-          />
-        </label>
-        <input
-          type="text"
-          id="username"
-          ref={nameRef}
-          autoComplete="off"
-          onChange={(e) => setName(e.target.value)}
-          value={name}
-          required
-          aria-invalid={validName ? "false" : "true"}
-          aria-describedby="uidnote"
-          onFocus={() => setNameFocus(true)}
-          onBlur={() => setNameFocus(false)}
-        />
-        <p
-          id="uidnote"
-          className={
-            nameFocus && name && !validName ? "instructions" : "offscreen"
-          }
-        >
-          <FontAwesomeIcon icon={faInfoCircle} />
-          4 to 24 characters.
-          <br />
-          Must begin with a letter.
-          <br />
-          Letters, numbers, underscores, hyphens allowed.
-        </p>
-        <label htmlFor="email">
-          Email:
-          {/* Checking email if its valid to display the right icon is not working properly any suggestions? */}
-          <FontAwesomeIcon
-            icon={faCheck}
-            className={validEmail ? "valid" : "hide"}
-          />
-          <FontAwesomeIcon
-            icon={faTimes}
-            className={validEmail || email ? "hide" : "invalid"}
-          />
-        </label>
-        <input
-          type="email"
-          id="email"
-          ref={nameRef}
-          autoComplete="off"
-          onChange={(e) => setEmail(e.target.value)}
-          value={email}
-          required
-          aria-invalid={validEmail ? "false" : "true"}
-          aria-describedby="uidnote"
-          onFocus={() => setEmailFocus(true)}
-          onBlur={() => setEmailFocus(false)}
-        />
-        <p className={emailFocus && !validEmail ? "instructions" : "offscreen"}>
-          <FontAwesomeIcon icon={faInfoCircle} />
-          Example: example@gmail.com
-          <br />
-        </p>
-        <label htmlFor="password">
-          Password:
-          <FontAwesomeIcon
-            icon={faCheck}
-            className={validPassword ? "valid" : "hide"}
-          />
-          <FontAwesomeIcon
-            icon={faTimes}
-            className={validPassword || !password ? "hide" : "invalid"}
-          />
-        </label>
-        <input
-          type="password"
-          id="password"
-          onChange={(e) => setPassword(e.target.value)}
-          value={password}
-          required
-          aria-invalid={validPassword ? "false" : "true"}
-          aria-describedby="passwordnote"
-          onFocus={() => setPasswordFocus(true)}
-          onBlur={() => setPasswordFocus(false)}
-        />
-        <p
-          id="passwordnote"
-          className={
-            passwordFocus && !validPassword ? "instructions" : "offscreen"
-          }
-        >
-          <FontAwesomeIcon icon={faInfoCircle} />
-          8 to 24 characters.
-          <br />
-          Must include uppercase and lowercase letters, a number and not include
-          special characters.
-          <br />
-        </p>
+    <Paper
+      sx={{
+        padding: "16px",
+        display: "flex",
+        justifyContent: "center",
+        margin: "auto 0",
+        maxWidth: "15em",
+        margin: "auto auto",
+      }}
+    >
+      <Stack spacing={2}>
+        {errMsg ? (
+          <Alert severity={errMsg ? "error" : "success"} aria-live="assertive">
+            {errMsg}
+          </Alert>
+        ) : (
+          ""
+        )}
+        <Typography variant="h5">Sign Up</Typography>
+        <form onSubmit={handleSubmit}>
+          <Stack spacing={2}>
+            <TextField
+              type="text"
+              label="Username:"
+              ref={nameRef}
+              size="small"
+              autoComplete="off"
+              onChange={(e) => setName(e.target.value)}
+              value={name}
+              required
+              aria-invalid={validName ? "false" : "true"}
+              onFocus={() => setNameFocus(true)}
+              onBlur={() => setNameFocus(false)}
+            />
+            <FormHelperText>
+              4 to 24 characters. Must begin with a letter. Letters, numbers,
+              underscores, hyphens allowed.
+            </FormHelperText>
+            <TextField
+              type="email"
+              label="Email:"
+              helperText="You can use letters, numbers & periods"
+              ref={nameRef}
+              size="small"
+              autoComplete="off"
+              onChange={(e) => setEmail(e.target.value)}
+              value={email}
+              required
+              aria-invalid={validEmail ? "false" : "true"}
+              onFocus={() => setEmailFocus(true)}
+              onBlur={() => setEmailFocus(false)}
+            />
 
-        <label htmlFor="confirm_password">
-          Confirm Password:
-          <FontAwesomeIcon
-            icon={faCheck}
-            className={validMatch && matchPassword ? "valid" : "hide"}
-          />
-          <FontAwesomeIcon
-            icon={faTimes}
-            className={validMatch || !matchPassword ? "hide" : "invalid"}
-          />
-        </label>
-        <input
-          type="password"
-          id="confirm_password"
-          onChange={(e) => setMatchPassword(e.target.value)}
-          value={matchPassword}
-          required
-          aria-invalid={validMatch ? "false" : "true"}
-          aria-describedby="confirmnote"
-          onFocus={() => setMatchFocus(true)}
-          onBlur={() => setMatchFocus(false)}
-        />
-        <p
-          id="confirmnote"
-          className={matchFocus && !validMatch ? "instructions" : "offscreen"}
-        >
-          <FontAwesomeIcon icon={faInfoCircle} />
-          Must match the first password input field.
-        </p>
+            <TextField
+              type="password"
+              label="Password:"
+              helperText="Use 4 or more characters with a mix of Capital and small letters and numbers. 
+              No symbols allowed"
+              size="small"
+              onChange={(e) => setPassword(e.target.value)}
+              value={password}
+              required
+              aria-invalid={validPassword ? "false" : "true"}
+              onFocus={() => setPasswordFocus(true)}
+              onBlur={() => setPasswordFocus(false)}
+            />
 
-        <button
-          disabled={!validName || !validPassword || !validMatch ? true : false}
-        >
-          Sign Up
-        </button>
-      </form>
-      <p>
-        Already have an Account ?
-        <br />
-        <span className="line">
-          <Link to="/">Sign In </Link>
-        </span>
-      </p>
-    </section>
+            <TextField
+              type="password"
+              label="Confirm Password:"
+              size="small"
+              helperText="Confirm your Password"
+              onChange={(e) => setMatchPassword(e.target.value)}
+              value={matchPassword}
+              required
+              aria-invalid={validMatch ? "false" : "true"}
+              aria-describedby="confirmnote"
+              onFocus={() => setMatchFocus(true)}
+              onBlur={() => setMatchFocus(false)}
+            />
+
+            <Button
+              disabled={
+                !validName || !validPassword || !validMatch ? true : false
+              }
+            >
+              Sign Up
+            </Button>
+          </Stack>
+        </form>
+        <p>
+          Already have an Account ?
+          <br />
+          <Link to="/" style={{ textDecoration: "unset", color: "#1976d2" }}>
+            Sign In
+          </Link>
+        </p>
+      </Stack>
+    </Paper>
   );
 };
 
