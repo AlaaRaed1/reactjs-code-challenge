@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, useContext } from "react";
+import React, { useRef, useState, useEffect } from "react";
 
 import { useNavigate } from "react-router-dom";
 import axios from "../../Api/axios";
@@ -9,7 +9,6 @@ import {
   Paper,
   Button,
   Typography,
-  Link as Mlink,
   Alert,
 } from "@mui/material";
 const LOGIN_URL = "/auth/login";
@@ -17,7 +16,6 @@ const SignIn = () => {
   const navigate = useNavigate();
   const emailRef = useRef();
 
-  // console.log(auth);
   const [email, setEmail] = useState("");
   const [listOfUsers, setListOfUsers] = useState([]);
   const [password, setPassword] = useState("");
@@ -27,7 +25,7 @@ const SignIn = () => {
     const data = await axios.get("/users");
     setListOfUsers(data.data);
   };
-
+  console.log(listOfUsers);
   useEffect(() => {
     getUsers();
   }, []);
@@ -54,7 +52,9 @@ const SignIn = () => {
         }
       );
       if (response) {
-        navigate("/products");
+        setTimeout(() => {
+          navigate("/");
+        }, 1000);
       }
 
       // console.log(JSON.stringify(response));
@@ -79,7 +79,7 @@ const SignIn = () => {
     >
       <Stack spacing={2}>
         {errMsg ? (
-          <Alert severity={errMsg ? "error" : "success"} aria-live="assertive">
+          <Alert severity="error" aria-live="assertive">
             {errMsg}
           </Alert>
         ) : (
