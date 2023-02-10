@@ -52,6 +52,10 @@ const SignIn = () => {
         }
       );
       if (response) {
+        localStorage.setItem(
+          "access_token",
+          JSON.stringify(response.data.access_token)
+        );
         setTimeout(() => {
           navigate("/");
         }, 1000);

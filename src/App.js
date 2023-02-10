@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect } from "react";
 import "./assets/main.scss";
 import SignIn from "./Components/SignIn/index";
 import SignUp from "./Components/SignUp/index";
@@ -10,7 +10,12 @@ import { Box, Button } from "@mui/material";
 function App() {
   const navigate = useNavigate();
   const location = useLocation();
-
+  useEffect(() => {
+    const access_token = localStorage.getItem("access_token");
+    if (!access_token) {
+      navigate("/signin");
+    }
+  }, [navigate]);
   return (
     <div className="App">
       <Box>
