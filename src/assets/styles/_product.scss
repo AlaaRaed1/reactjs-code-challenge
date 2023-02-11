@@ -1,12 +1,7 @@
-body {
-  background-color: #eeefff;
-}
-.offscreen {
-  display: none !important;
-}
 .product_desc {
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
+  margin-top: 10% !important;
 }

@@ -1,0 +1,19 @@
+#img_grid {
+  max-width: 300px;
+}
+
+@media (max-width: 500px) {
+  #paper {
+    height: max-content;
+    padding-bottom: 3.5em;
+    #product_details_grid {
+      flex-wrap: wrap;
+      #img_grid {
+        max-width: 100%;
+      }
+      #info_grid {
+        max-width: 100% !important;
+      }
+    }
+  }
+}

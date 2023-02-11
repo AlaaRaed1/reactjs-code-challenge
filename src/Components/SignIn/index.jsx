@@ -1,5 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
-
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "../../Api/axios";
 import { Link } from "react-router-dom";
@@ -14,31 +13,12 @@ import {
 const LOGIN_URL = "/auth/login";
 const SignIn = () => {
   const navigate = useNavigate();
-  const emailRef = useRef();
 
   const [email, setEmail] = useState("");
-  const [listOfUsers, setListOfUsers] = useState([]);
   const [password, setPassword] = useState("");
-  const [errMsg, setErrMsg] = useState("");
+  const [success, setSuccess] = useState();
 
-  const getUsers = async () => {
-    const data = await axios.get("/users");
-    setListOfUsers(data.data);
-  };
-  console.log(listOfUsers);
-  useEffect(() => {
-    getUsers();
-  }, []);
-
-  useEffect(() => {
-    emailRef.current.focus();
-  }, []);
-
-  // console.log(listOfUsers);
-
-  useEffect(() => {
-    setErrMsg("");
-  }, [email, password]);
+  useEffect(() => {}, [email, password]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -56,35 +36,32 @@ const SignIn = () => {
           "access_token",
           JSON.stringify(response.data.access_token)
         );
+        setSuccess(true);
+
         setTimeout(() => {
-          navigate("/");
-        }, 1000);
+          navigate("/products");
+        }, 700);
       }
-
-      // console.log(JSON.stringify(response));
-
-      setEmail("");
-      setPassword("");
     } catch (err) {
-      setErrMsg("User Does Not Exist");
+      setSuccess(false);
     }
   };
-
+  console.log(success);
   return (
     <Paper
       sx={{
-        padding: "16px",
+        padding: "3em",
         display: "flex",
         justifyContent: "center",
-        margin: "auto 0",
-        maxWidth: "15em",
+        width: "fit-content",
+        maxWidth: "100%",
         margin: "auto auto",
       }}
     >
-      <Stack spacing={2}>
-        {errMsg ? (
-          <Alert severity="error" aria-live="assertive">
-            {errMsg}
+      <Stack spacing={8} sx={{ width: "20em" }}>
+        {success === true || false ? (
+          <Alert severity={success ? "success" : "error"} aria-live="assertive">
+            {success ? "You've Successfully Logged In" : "User Does Not Exist"}
           </Alert>
         ) : (
           ""
@@ -96,36 +73,30 @@ const SignIn = () => {
             <TextField
               type="email"
               label="Email"
-              size="small"
-              ref={emailRef}
               autoComplete="off"
               onChange={(e) => {
                 setEmail(e.target.value);
               }}
               value={email}
               required
-              error={errMsg ? true : false}
+              error={success === undefined || true ? false : true}
             />
             <TextField
               type="password"
               label="Password"
-              size="small"
               onChange={(e) => {
                 setPassword(e.target.value);
               }}
               value={password}
               required
-              error={errMsg ? true : false}
+              error={success === undefined || true ? false : true}
             />
             <Button type="submit">Sign In </Button>
           </Stack>
         </form>
         <p>
           Don't have an Account ? <br />
-          <Link
-            style={{ textDecoration: "unset", color: "#1976d2" }}
-            to="/signup"
-          >
+          <Link style={{ textDecoration: "unset", color: "#1976d2" }} to="/">
             Sign Up
           </Link>
         </p>

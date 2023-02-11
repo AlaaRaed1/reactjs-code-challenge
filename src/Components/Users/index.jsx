@@ -13,6 +13,7 @@ import {
 
 const UsersTable = () => {
   const [listOfUsers, setListOfUsers] = useState([]);
+
   const getListOfUsers = async () => {
     const response = await axios.get("users");
     setListOfUsers(response.data);
@@ -31,9 +32,7 @@ const UsersTable = () => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
-  const emptyRows =
-    rowsPerPage -
-    Math.min(rowsPerPage, listOfUsers.length - page * rowsPerPage);
+
   return (
     <TableContainer component={Paper}>
       <Table aria-label="simple table">
@@ -54,14 +53,10 @@ const UsersTable = () => {
                 <TableCell>{row.email}</TableCell>
               </TableRow>
             ))}
-          {emptyRows > 0 && (
-            <TableRow style={{ height: 53 * emptyRows }}>
-              <TableCell colSpan={6} />
-            </TableRow>
-          )}
         </TableBody>
       </Table>
       <TablePagination
+        sx={{ display: "flex", justifyContent: "center" }}
         rowsPerPageOptions={[5, 10, 25]}
         component="div"
         count={listOfUsers.length}
