@@ -13,7 +13,7 @@ function App() {
   const [auth, setAuth] = useState(localStorage.getItem("access_token"));
   useEffect(() => {
     setAuth(localStorage.getItem("access_token"));
-  }, [navigate, auth]);
+  }, [navigate]);
   const logOut = () => {
     localStorage.removeItem("access_token");
     navigate("signin");
