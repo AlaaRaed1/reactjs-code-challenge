@@ -41,12 +41,14 @@ const SignIn = () => {
         setTimeout(() => {
           navigate("/products");
         }, 700);
+      } else if (!response) {
+        setSuccess(false);
       }
     } catch (err) {
       setSuccess(false);
     }
   };
-  console.log(success);
+
   return (
     <Paper
       sx={{
@@ -59,9 +61,9 @@ const SignIn = () => {
       }}
     >
       <Stack spacing={8} sx={{ width: "20em" }}>
-        {success === true || false ? (
+        {success === true || success === false ? (
           <Alert severity={success ? "success" : "error"} aria-live="assertive">
-            {success ? "You've Successfully Logged In" : "User Does Not Exist"}
+            {success ? "You've Successfully Logged In" : "Invalid Entry"}
           </Alert>
         ) : (
           ""
@@ -76,6 +78,7 @@ const SignIn = () => {
               autoComplete="off"
               onChange={(e) => {
                 setEmail(e.target.value);
+                setSuccess();
               }}
               value={email}
               required
@@ -86,6 +89,7 @@ const SignIn = () => {
               label="Password"
               onChange={(e) => {
                 setPassword(e.target.value);
+                setSuccess();
               }}
               value={password}
               required

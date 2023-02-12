@@ -13,8 +13,11 @@ function App() {
   const [auth, setAuth] = useState(localStorage.getItem("access_token"));
   useEffect(() => {
     setAuth(localStorage.getItem("access_token"));
-  }, [navigate]);
-
+  }, [navigate, auth]);
+  const logOut = () => {
+    localStorage.removeItem("access_token");
+    navigate("signin");
+  };
   return (
     <Box className="App">
       {location.pathname !== "/signin" && location.pathname !== "/" && auth ? (
@@ -22,21 +25,29 @@ function App() {
           sx={{
             width: "100%",
             display: "flex",
-            justifyContent: "center",
             boxShadow: "2px 1px 1px 1px rgba(0, 0, 0, 0.2)",
           }}
         >
           <Button
             onClick={() => navigate("/products")}
             disabled={location.pathname === "/products" ? true : false}
+            className="tabs_button"
           >
             Products Page
           </Button>
           <Button
             onClick={() => navigate("/users")}
             disabled={location.pathname === "/users" ? true : false}
+            className="tabs_button"
           >
             Users
+          </Button>
+          <Button
+            onClick={logOut}
+            sx={{ display: "block", marginLeft: "auto" }}
+            className="logout_button"
+          >
+            Log out{" "}
           </Button>
         </Box>
       ) : (

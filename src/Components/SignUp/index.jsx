@@ -28,9 +28,6 @@ const SignUp = () => {
   const [password, setPassword] = useState("");
   const [validPassword, setValidPassword] = useState();
 
-  const [matchPassword, setMatchPassword] = useState("");
-  const [validMatch, setValidMatch] = useState(false);
-
   const [errMsg, setErrMsg] = useState("");
 
   const [userTaken, setUserTaken] = useState(false);
@@ -58,12 +55,10 @@ const SignUp = () => {
     if (user_taken) {
       setUserTaken(true);
       setErrMsg("User is taken");
-    } else if (!validMatch) {
-      setErrMsg("Passwords do not match");
     } else {
       setUserTaken(false);
     }
-  }, [name, errMsg, listOfUsers, userTaken, validMatch]);
+  }, [name, errMsg, listOfUsers, userTaken]);
 
   /*----------------------------- */
 
@@ -75,15 +70,12 @@ const SignUp = () => {
     } else {
       setValidPassword(false);
     }
-
-    setValidMatch(password === matchPassword);
-  }, [password, matchPassword]);
+  }, [password]);
 
   /*------------------------------- */
-
   useEffect(() => {
     setErrMsg("");
-  }, [name, password, matchPassword]);
+  }, [name, password]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -142,7 +134,7 @@ const SignUp = () => {
             <TextField
               type="text"
               label="Username:"
-              helperText="4 to 24 characters. You can use Letters, Numbers, and Symbols"
+              helperText="You can use Letters, Numbers, and Symbols"
               size="small"
               autoComplete="off"
               onChange={(e) => setName(e.target.value)}
@@ -166,7 +158,7 @@ const SignUp = () => {
               type="password"
               label="Password:"
               helperText="Use 4 or more characters with a mix of (Capital & small) letters and numbers. 
-              No symbols allowed."
+              No symbols allowed"
               size="small"
               onChange={(e) => setPassword(e.target.value)}
               value={password}
@@ -174,22 +166,7 @@ const SignUp = () => {
               aria-invalid={validPassword ? false : true}
             />
 
-            <TextField
-              type="password"
-              label="Confirm Password:"
-              size="small"
-              helperText="Confirm your Password"
-              onChange={(e) => setMatchPassword(e.target.value)}
-              value={matchPassword}
-              required
-              error={!validMatch}
-              aria-describedby="confirmnote"
-            />
-
-            <Button
-              disabled={!validPassword || !validMatch ? true : false}
-              type="submit"
-            >
+            <Button disabled={!validPassword} type="submit">
               Sign Up
             </Button>
           </Stack>
