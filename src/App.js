@@ -26,6 +26,8 @@ function App() {
             width: "100%",
             display: "flex",
             boxShadow: "2px 1px 1px 1px rgba(0, 0, 0, 0.2)",
+            marginBottom: "3em",
+            paddingInline: "1em",
           }}
         >
           <Button
@@ -47,7 +49,7 @@ function App() {
             sx={{ display: "block", marginLeft: "auto" }}
             className="logout_button"
           >
-            Log out{" "}
+            Log out
           </Button>
         </Box>
       ) : (

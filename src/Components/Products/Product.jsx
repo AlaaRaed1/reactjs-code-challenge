@@ -35,7 +35,7 @@ const Product = ({ product, getProductData }) => {
               <Typography variant="h5" fontSize={14}>
                 {title}
               </Typography>
-              <Typography variant="h6" fontSize={12}>
+              <Typography variant="h6" fontSize={12} color="#1976d2">
                 {"$" + price}
               </Typography>
               <Typography variant="p" fontSize={12} className="product_desc">
